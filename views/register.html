@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="stylesheets/bootstrap.min.css" media="screen">
+    <style type="text/css">
+        .m15 {
+            margin: 15px;
+        }
+        
+        .tc {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body screen_capture_injected="true">
+    <div class="container">
+        <%- message %>
+            <form class="col-sm-offset-4 col-sm-4 form-horizontal" role="form" method="post" onsubmit="return false">
+                <fieldset>
+                    <legend></legend>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <p class="tc">Creating account</p>
+                        </div>
+                        <div class="panel-body m15">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+						<span class="glyphicon glyphicon-user"></span>
+                                    </span>
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="username" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+						<span class="glyphicon glyphicon-lock"></span>
+                                    </span>
+                                    <input type="text" class="form-control" id="password" name="password" placeholder="password" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+						<span class="glyphicon glyphicon-lock"></span>
+                                    </span>
+                                    <input type="text" class="form-control" id="password1" name="password1" placeholder="password" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+						<span class="glyphicon glyphicon-envelope"></span>
+                                    </span>
+                                    <input type="text" class="form-control" id="useremail" name="email" placeholder="email" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-block" id="register1">register</button>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-info col-sm-2 col-sm-offset-10" id="login1">login</button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+    </div>
+
+    <script type="text/javascript" src="javascripts/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            var urlParams = window.location.search
+            if (urlParams) { //后来还是改成在node后端处理 
+                var paramsArr = urlParams.replace('?', '').split(/=|&/),
+                    paramsObj = {}
+                $.each(paramsArr, function(index, item) {
+                    if (index < paramsArr.length / 2) {
+                        var key = paramsArr[2 * index], //奇数位为Object的key，偶数位为Object的value
+                            value = paramsArr[2 * index + 1]
+                        paramsObj[key] = value
+                    }
+                })
+                console.log(paramsArr)
+                if (~paramsArr.indexOf('uname') && ~paramsArr.indexOf('upwd') && ~paramsArr.indexOf('uemail') && ~paramsArr.indexOf('registerMd5')) {
+                    // 数组中这些参数缺一不可
+                    console.loga(paramsArr, '---')
+
+                    // var data = {
+                    //     "uname": paramsObj.uname,
+                    //     "upwd": paramsObj.upwd,
+                    //     "uemail": paramsObj.uemail,
+                    //     "registerMd5": paramsObj.registerMd5
+                    // };
+                    // registerAJAX(data)
+                }
+            }
+            $("#login1").click(function() {
+                location.href = 'login';
+            });
+            $("#register1").click(function() {
+                var username = $("#username").val();
+                var password = $("#password").val();
+                var password1 = $("#password1").val();
+                var email = $('#useremail').val();
+                if (password !== password1) {
+                    $("#password").css("border", "1px solid red");
+                    $("#password1").css("border", "1px solid red");
+                } else if (password === password1) {
+                    var data = {
+                        "uname": username,
+                        "upwd": password,
+                        "uemail": email
+                    };
+                    registerAJAX(data)
+                }
+            });
+
+            function registerAJAX(data) {
+                $.ajax({
+                    url: '/register',
+                    type: 'post',
+                    data: data,
+                    success: function(data, status) {
+                        if (status == 'success') {
+                            location.href = 'login';
+                        }
+                    },
+                    error: function(data, err) {
+                        location.href = 'register';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</head>
+
+</html>
